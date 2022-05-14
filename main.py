@@ -10,9 +10,8 @@ screen = pygame.display.set_mode(size)
 pygame.display.set_caption('2048')
 clock = pygame.time.Clock()
 pygame.font.init()
-digits_font = pygame.font.SysFont(pygame.font.get_fonts()[10],50)
-#4
-btn_font = pygame.font.SysFont(pygame.font.get_fonts()[10],40)
+digits_font = pygame.font.SysFont("franklingothicmedium",50)
+btn_font = pygame.font.SysFont("franklingothicmedium",40)
 
 
 CELL_SIZE = 96
@@ -59,8 +58,6 @@ while running:
             elif event.key == pygame.K_LEFT:
                 left = False
 
-    if game.check_game_over():
-        print("Game over")
 
     game.show(screen)
     new_game_btn.show(screen, pygame.mouse.get_pos())

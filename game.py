@@ -23,6 +23,8 @@ class Game:
         self.__spawning = []
         self.__spawning_time = 6
 
+        self.__time_since_game_over = 0
+
         p1 = (random.randint(0,3),random.randint(0,3))
         p2 = (random.randint(0,3),random.randint(0,3))
         while p1 == p2:
@@ -247,7 +249,16 @@ class Game:
             32: (247,124,95),
             64: (247,95,59),
             128: (237,208,115),
-            256: (237,204,98)
+            256: (237,204,98),
+            512: (237,200,80),
+            1024: (237,197,63),
+            2048: (237,194,46),
+            4096: (60,58,50),
+            8192: (60,58,50),
+            16384: (60,58,50),
+            32768: (60,58,50),
+            65536: (60,58,50),
+            65536: (60,58,50)
         }
         pygame.draw.rect(screen, (187,173,160), pygame.Rect(self.__pos, [self.__margin*5 + self.__cell_size*4]*2),0,5)
 
@@ -339,6 +350,26 @@ class Game:
                 screen.blit(text_surface, (ax-dx,ay-dy))
                 
             self.__animating -=1
+
+        if self.check_game_over():
+            image = pygame.Surface([self.__margin*5 + self.__cell_size*4]*2, pygame.SRCALPHA,32)
+            pygame.draw.rect(image, (187,173,160),pygame.Rect((0,0), [self.__margin*5 + self.__cell_size*4]*2),0,5)
+            image = image.convert_alpha()
+            image.set_alpha(min(self.__time_since_game_over,150))
+            screen.blit(image,self.__pos)
+
+            text_surface = self.__font.render(str("Game over!"), False,(119,111,102))
+            text_surface = text_surface.convert_alpha()
+            text_surface.set_alpha(min(255,self.__time_since_game_over))
+            dx = text_surface.get_rect().width//2
+            dy = text_surface.get_rect().height//2
+
+            screen.blit(text_surface, (self.__pos[0] + (self.__cell_size*2+ 5/2*self.__margin) -dx, self.__pos[1]+(self.__cell_size*2+ 5/2*self.__margin)-dy))
+
+            if self.__time_since_game_over < 255:
+                self.__time_since_game_over += 5
+
+        
         
 
         
