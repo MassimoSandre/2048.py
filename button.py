@@ -26,7 +26,7 @@ class Button:
         __over_time: An integer, representing the amount of time the mouse cursor has been over the button
     """
 
-    def __init__(self,*, pos, width:int, height:int, onclick=None, disabled:bool=False, value:str="",  font:pygame.font.Font=None) -> None:
+    def __init__(self,*, pos, width:int, height:int, onclick=None, disabled:bool=False, value:str="",  font:pygame.font.Font=None, font_size) -> None:
         """
         Inits Button
 
@@ -37,7 +37,8 @@ class Button:
             onclick: A function that will be called when the button is clicked
             disabled: A boolean, representing if the button is disabled or not
             value: A string that will be displayed on the button
-            font: A pygame font used to write the string displayed on the button
+            font: A string representing a valid pygame font
+            font_size: An integer, representing the size of the font
         """
         self.__pos = pos
         self.__width = width
@@ -46,7 +47,10 @@ class Button:
         self.disabled = disabled
         
         self.__value = value
-        self.__font = font
+        
+        pygame.font.init()
+        self.__font = pygame.font.SysFont(font,font_size)
+
 
         self.__over_time = 0
     

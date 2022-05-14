@@ -3,12 +3,17 @@ import pygame
 
 
 class Game:
-    def __init__(self, position, cell_size, margin, font) -> None:
+    def __init__(self, position, cell_size, margin, font, max_font_size) -> None:
         self.__pos = position
         self.__cell_size = cell_size
         self.__margin = margin
-        self.__font = font
         
+        pygame.font.init()
+        self.__fonts = [pygame.font.SysFont(font,max_font_size)]
+        for i in range(5):
+            font_size = max_font_size - int((i/6 * max_font_size)/1.15)
+            self.__fonts.append(pygame.font.SysFont(font,font_size))
+
         self.reset()
 
     def reset(self):
@@ -17,7 +22,7 @@ class Game:
         self.__board = [[0 for _ in range(4)] for _ in range(4)]
 
         self.__animating = 0
-        self.__animation_time = 6
+        self.__animation_time = 10
         self.__animation_info = []
 
         self.__spawning = []
@@ -32,6 +37,7 @@ class Game:
     def make_move(self, move):
         if not self.is_legal_move(move):
             return
+        self.__spawning = []
         self.__animation_info = []
         self.__animating = self.__animation_time
         if move == "up":
@@ -296,7 +302,7 @@ class Game:
                         cx += self.__cell_size//2
                         cy += self.__cell_size//2
 
-                        text_surface = self.__font.render(str(self.__board[i][j]),False,text_color)
+                        text_surface = self.__fonts[len(str(self.__board[i][j]))-1].render(str(self.__board[i][j]),False,text_color)
 
                         r = text_surface.get_rect()
 
@@ -338,7 +344,7 @@ class Game:
                 if v > 4:
                     text_color = (249,246,242)
 
-                text_surface = self.__font.render(str(v),False,text_color)
+                text_surface = self.__fonts[len(str(v))-1].render(str(v),False,text_color)
 
                 r = text_surface.get_rect()
 
@@ -353,10 +359,10 @@ class Game:
             image = pygame.Surface([self.__margin*5 + self.__cell_size*4]*2, pygame.SRCALPHA,32)
             pygame.draw.rect(image, (187,173,160),pygame.Rect((0,0), [self.__margin*5 + self.__cell_size*4]*2),0,5)
             image = image.convert_alpha()
-            image.set_alpha(min(self.__time_since_game_over,150))
+            image.set_alpha(min(self.__time_since_game_over,200))
             screen.blit(image,self.__pos)
 
-            text_surface = self.__font.render(str("Game over!"), False,(119,111,102))
+            text_surface = self.__fonts[0].render(str("Game over!"), False,(119,111,102))
             text_surface = text_surface.convert_alpha()
             text_surface.set_alpha(min(255,self.__time_since_game_over))
             dx = text_surface.get_rect().width//2
@@ -370,4 +376,5 @@ class Game:
         
         
 
+        
         

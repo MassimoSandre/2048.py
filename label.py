@@ -2,13 +2,15 @@ from matplotlib.pyplot import title
 import pygame
 
 class Label:
-    def __init__(self, pos, size, title, value, title_font, value_font) -> None:
+    def __init__(self, pos, size, title, value, title_font, title_font_size, value_font, value_font_size) -> None:
         self.__posx, self.__posy = pos
         self.__width,self.__height = size
         self.__title = title
         self.__value = value
-        self.__title_font = title_font
-        self.__value_font = value_font
+
+        pygame.font.init()
+        self.__title_font = pygame.font.SysFont(title_font,title_font_size)
+        self.__value_font = pygame.font.SysFont(value_font,value_font_size)
     
     def set_value(self, new_value):
         self.__value = new_value
