@@ -1,6 +1,8 @@
 import pygame
 from game import Game
 from button import Button
+from label import Label
+import json
 
 size = width, height = 550,660
 
@@ -12,7 +14,8 @@ clock = pygame.time.Clock()
 pygame.font.init()
 digits_font = pygame.font.SysFont("franklingothicmedium",50)
 btn_font = pygame.font.SysFont("franklingothicmedium",40)
-
+label_title_font = pygame.font.SysFont("franklingothicmedium",20)
+label_value_font = pygame.font.SysFont("franklingothicmedium",30)
 
 CELL_SIZE = 96
 CELL_MARGIN = 12
@@ -22,8 +25,24 @@ BTN_POS = width//2, height-(height-(CELL_SIZE*4 + CELL_MARGIN*5))//4
 BTN_WIDTH = (CELL_SIZE*4 + CELL_MARGIN*5)
 BTN_HEIGHT = min((height-(CELL_SIZE*4 + CELL_MARGIN*5))//2 - 20, 100)
 
+SCORE_LABEL_POS = GAME_POS[0] + (CELL_SIZE*4 + CELL_MARGIN*5)//4, (height-(CELL_SIZE*4 + CELL_MARGIN*5))//4
+BEST_SCORE_LABEL_POS = GAME_POS[0] + 3*(CELL_SIZE*4 + CELL_MARGIN*5)//4, (height-(CELL_SIZE*4 + CELL_MARGIN*5))//4
+LABEL_SIZE = int((CELL_SIZE*4 + CELL_MARGIN*5)//2 * 0.9), BTN_HEIGHT
+
 game = Game(GAME_POS,CELL_SIZE, CELL_MARGIN, digits_font)
 new_game_btn = Button(pos=BTN_POS, width=BTN_WIDTH,height=BTN_HEIGHT,onclick=game.reset,value="New Game",font=btn_font)
+
+score_label = Label(SCORE_LABEL_POS, LABEL_SIZE, "SCORE", 0, label_title_font, label_value_font)
+best_score_label = Label(BEST_SCORE_LABEL_POS, LABEL_SIZE, "BEST", 0, label_title_font, label_value_font)
+
+try:
+    f = open("data.dat","r")
+    content = json.load(f)
+    f.close()
+    best_score_label.set_value(content["highscore"])
+except:
+    best_score_label.set_value(0)
+
 
 running = True
 
@@ -59,7 +78,18 @@ while running:
                 left = False
 
 
+    score = game.get_score()
+    score_label.set_value(score)
+    if best_score_label.get_value() < score:
+        best_score_label.set_value(score)
+        f = open("data.dat","w")
+        json.dump({"highscore":score},f)
+        f.close()
+
     game.show(screen)
     new_game_btn.show(screen, pygame.mouse.get_pos())
+
+    score_label.show(screen)
+    best_score_label.show(screen)
     pygame.display.update()
     clock.tick(60)
