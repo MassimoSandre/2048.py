@@ -1,5 +1,4 @@
 import random
-from matplotlib import animation
 import pygame
 
 
@@ -20,6 +19,9 @@ class Game:
         self.__animating = 0
         self.__animation_time = 6
         self.__animation_info = []
+
+        self.__spawning = []
+        self.__spawning_time = 6
 
         p1 = (random.randint(0,3),random.randint(0,3))
         p2 = (random.randint(0,3),random.randint(0,3))
@@ -49,6 +51,7 @@ class Game:
                                 
                             elif self.__board[last_valid][j] == self.__board[i][j]:
                                 self.__animation_info.append(((i,j),(last_valid,j), self.__board[i][j]))
+                                self.__spawning.append((last_valid,j,0))
                                 self.__board[last_valid][j] *= 2
                                 self.__score += self.__board[last_valid][j]
                                 
@@ -57,6 +60,7 @@ class Game:
                             else:
                                 last_valid +=1
                                 self.__animation_info.append(((i,j),(last_valid,j), self.__board[i][j]))
+                                
                                 self.__board[last_valid][j], self.__board[i][j] = self.__board[i][j], self.__board[last_valid][j]
 
                         else:
@@ -75,6 +79,7 @@ class Game:
                                 
                             elif self.__board[i][3-last_valid] == self.__board[i][3-j]:
                                 self.__animation_info.append(((i,3-j),(i,3-last_valid), self.__board[i][3-j]))
+                                self.__spawning.append((i,3-last_valid,0))
                                 self.__board[i][3-last_valid] *= 2
                                 self.__score += self.__board[i][3-last_valid] 
                                 
@@ -101,6 +106,7 @@ class Game:
                                 
                             elif self.__board[3-last_valid][j] == self.__board[3-i][j]:
                                 self.__animation_info.append(((3-i,j),(3-last_valid,j), self.__board[3-i][j]))
+                                self.__spawning.append((3-last_valid,j,0))
                                 self.__board[3-last_valid][j] *= 2
                                 self.__score += self.__board[3-last_valid][j] 
                                 
@@ -127,6 +133,7 @@ class Game:
                                 
                             elif self.__board[i][last_valid] == self.__board[i][j]:
                                 self.__animation_info.append(((i,j),(i,last_valid), self.__board[i][j]))
+                                self.__spawning.append((i,last_valid,0))
                                 self.__board[i][last_valid] *= 2
                                 self.__score += self.__board[i][last_valid]
                                 
@@ -153,6 +160,7 @@ class Game:
         if free_cells != []:
             i,j = random.choice(free_cells)
             self.__board[i][j] = 2
+            self.__spawning.append((i,j,0))
             
 
     def is_legal_move(self, move):
@@ -246,11 +254,34 @@ class Game:
         if not self.__animating:
             for i in range(4):
                 for j in range(4):
-                    pygame.draw.rect(screen, color[self.__board[i][j]], pygame.Rect((self.__pos[0]+self.__margin*(j+1)+self.__cell_size*j, self.__pos[1]+self.__margin*(i+1)+self.__cell_size*i),[self.__cell_size]*2),0,3)
                     if self.__board[i][j] != 0:
-                        text_color = (0,0,0)
+
+                        is_spawning = False
+                        for e in self.__spawning:
+                            ti,tj,tt = e
+                            if (ti,tj) == (i,j):
+                                is_spawning = True
+                                break
+                        
+                        if not is_spawning:
+                            pygame.draw.rect(screen, color[self.__board[i][j]], pygame.Rect((self.__pos[0]+self.__margin*(j+1)+self.__cell_size*j, self.__pos[1]+self.__margin*(i+1)+self.__cell_size*i),[self.__cell_size]*2),0,3)
+                        else:
+                            ds = 0.4/self.__spawning_time * tt
+                            
+                            actual_cell_size = (ds+0.7)*self.__cell_size
+                            actual_cell_size = int(actual_cell_size)
+                            delta = (actual_cell_size-self.__cell_size)//2
+                            pygame.draw.rect(screen, color[self.__board[i][j]], pygame.Rect((self.__pos[0]+self.__margin*(j+1)+self.__cell_size*j -delta, self.__pos[1]+self.__margin*(i+1)+self.__cell_size*i - delta),[actual_cell_size]*2),0,3)
+
+                            if tt == self.__spawning_time:
+                                self.__spawning.remove((i,j,tt))
+                            else:
+                                self.__spawning[self.__spawning.index((i,j,tt))] = (i,j,tt+1)
+                                
+
+                        text_color = (119,110,101)
                         if self.__board[i][j] > 4:
-                            text_color = (255,255,255)
+                            text_color = (249,246,242)
                         
                         cx,cy=(self.__pos[0]+self.__margin*(j+1)+self.__cell_size*j, self.__pos[1]+self.__margin*(i+1)+self.__cell_size*i)
                         cx += self.__cell_size//2
@@ -264,6 +295,8 @@ class Game:
                         dy = r.height//2
 
                         screen.blit(text_surface, (cx-dx,cy-dy))
+                    else:
+                        pygame.draw.rect(screen, color[0], pygame.Rect((self.__pos[0]+self.__margin*(j+1)+self.__cell_size*j, self.__pos[1]+self.__margin*(i+1)+self.__cell_size*i),[self.__cell_size]*2),0,3)
 
         else:
             for i in range(4):
@@ -292,9 +325,9 @@ class Game:
                 ax += self.__cell_size//2
                 ay += self.__cell_size//2
 
-                text_color = (0,0,0)
+                text_color = (119,110,101)
                 if v > 4:
-                    text_color = (255,255,255)
+                    text_color = (249,246,242)
 
                 text_surface = self.__font.render(str(v),False,text_color)
 

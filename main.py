@@ -1,18 +1,30 @@
 import pygame
 from game import Game
+from button import Button
 
-size = width, height = 800,800
+size = width, height = 550,660
 
-bgcolor = 0,0,0
+bgcolor = (249,246,219)
 
 screen = pygame.display.set_mode(size)
 pygame.display.set_caption('2048')
 clock = pygame.time.Clock()
 pygame.font.init()
-font = pygame.font.SysFont('arial',30)
+digits_font = pygame.font.SysFont(pygame.font.get_fonts()[10],50)
+#4
+btn_font = pygame.font.SysFont(pygame.font.get_fonts()[10],40)
 
 
-game = Game((100,100),64, 8, font)
+CELL_SIZE = 96
+CELL_MARGIN = 12
+GAME_POS = (width-(CELL_SIZE*4 + CELL_MARGIN*5))//2,(height-(CELL_SIZE*4 + CELL_MARGIN*5))//2
+
+BTN_POS = width//2, height-(height-(CELL_SIZE*4 + CELL_MARGIN*5))//4
+BTN_WIDTH = (CELL_SIZE*4 + CELL_MARGIN*5)
+BTN_HEIGHT = min((height-(CELL_SIZE*4 + CELL_MARGIN*5))//2 - 20, 100)
+
+game = Game(GAME_POS,CELL_SIZE, CELL_MARGIN, digits_font)
+new_game_btn = Button(pos=BTN_POS, width=BTN_WIDTH,height=BTN_HEIGHT,onclick=game.reset,value="New Game",font=btn_font)
 
 running = True
 
@@ -22,7 +34,12 @@ while running:
     screen.fill(bgcolor)
 
     for event in pygame.event.get():
-        if event.type == pygame.KEYDOWN:
+        if event.type == pygame.MOUSEBUTTONDOWN:
+            if event.button == 1:
+                if new_game_btn.is_inside(event.pos):
+                    new_game_btn.click()
+
+        elif event.type == pygame.KEYDOWN:
             if event.key == pygame.K_UP and not up:
                 game.make_move("up")
             elif event.key == pygame.K_RIGHT and not right:
@@ -32,7 +49,7 @@ while running:
             elif event.key == pygame.K_LEFT and not left:    
                 game.make_move("left")
 
-        if event.type == pygame.KEYUP:
+        elif event.type == pygame.KEYUP:
             if event.key == pygame.K_UP:
                 up = False
             elif event.key == pygame.K_RIGHT:
@@ -46,5 +63,6 @@ while running:
         print("Game over")
 
     game.show(screen)
+    new_game_btn.show(screen, pygame.mouse.get_pos())
     pygame.display.update()
     clock.tick(60)
