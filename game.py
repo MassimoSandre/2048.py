@@ -25,14 +25,8 @@ class Game:
 
         self.__time_since_game_over = 0
 
-        p1 = (random.randint(0,3),random.randint(0,3))
-        p2 = (random.randint(0,3),random.randint(0,3))
-        while p1 == p2:
-            p2 = (random.randint(0,3),random.randint(0,3))
-        i,j = p1
-        self.__board[i][j] = 2
-        i,j = p2
-        self.__board[i][j] = 2
+        self.__next_turn()
+        self.__next_turn()
 
 
     def make_move(self, move):
@@ -161,7 +155,11 @@ class Game:
 
         if free_cells != []:
             i,j = random.choice(free_cells)
-            self.__board[i][j] = 2
+            if random.randint(0,5):
+                self.__board[i][j] = 2
+            else:
+                self.__board[i][j] = 4
+
             self.__spawning.append((i,j,0))
             
 
@@ -258,7 +256,7 @@ class Game:
             16384: (60,58,50),
             32768: (60,58,50),
             65536: (60,58,50),
-            65536: (60,58,50)
+            131072: (60,58,50)
         }
         pygame.draw.rect(screen, (187,173,160), pygame.Rect(self.__pos, [self.__margin*5 + self.__cell_size*4]*2),0,5)
 
