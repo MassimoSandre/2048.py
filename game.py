@@ -65,7 +65,7 @@ class Game:
         self.__board = [[0 for _ in range(4)] for _ in range(4)]
 
         self.__animating = 0
-        self.__animation_time = 10
+        self.__animation_time = 6
         self.__animation_info = []
 
         self.__spawning = []
@@ -279,7 +279,7 @@ class Game:
                     elif gap:
                         return True
                     # If two tiles can be merge, the move is legal
-                    if i < 3:
+                    if i < 3 and self.__board[i][j] != 0:
                         if self.__board[i][j] == self.__board[i+1][j]:
                             return True
                     i+=1
@@ -296,7 +296,7 @@ class Game:
                     elif gap:
                         return True
                     # If two tiles can be merge, the move is legal
-                    if i < 3:
+                    if i < 3 and self.__board[j][3-i] != 0:
                         if self.__board[j][3-i] == self.__board[j][3-(i+1)]:
                             return True
                     i+=1
@@ -313,7 +313,7 @@ class Game:
                     elif gap:
                         return True
                     # If two tiles can be merge, the move is legal
-                    if i < 3:
+                    if i < 3 and self.__board[3-i][j] != 0:
                         if self.__board[3-i][j] == self.__board[3-(i+1)][j]:
                             return True
                     i+=1
@@ -330,7 +330,7 @@ class Game:
                     elif gap:
                         return True
                     # If two tiles can be merge, the move is legal
-                    if i < 3:
+                    if i < 3 and self.__board[j][i] != 0:
                         if self.__board[j][i] == self.__board[j][i+1]:
                             return True
                     i+=1

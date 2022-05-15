@@ -84,6 +84,11 @@ while running:
             elif event.key == pygame.K_LEFT:
                 left = False
 
+    if new_game_btn.is_inside(pygame.mouse.get_pos()):
+        pygame.mouse.set_cursor(*pygame.cursors.Cursor(pygame.SYSTEM_CURSOR_HAND))
+    else:
+        pygame.mouse.set_cursor(*pygame.cursors.arrow)
+
     # I get the current player's score and display it in the score label
     score = game.get_score()
     score_label.set_value(score)
