@@ -1,9 +1,48 @@
+""" 
+Game module
+
+The Game class allows to handle and render a 2048 game 
+
+    Usage example:
+
+    game = Game(position, cell_size, margin, font, max_font_size)
+    game.show(surface)
+"""
+
 import random
 import pygame
 
 
 class Game:
-    def __init__(self, position, cell_size, margin, font, max_font_size) -> None:
+    """
+    A class designed to handle and display a 2048 game
+
+    Attributes:
+        __pos: A tuple of 2 integers, representing the absolute position (in pixel) of the top left corner of the board
+        __cell_size: An integer, representing the size of a single cell of the board
+        __margin: An integer, represeting the margin between two cells
+        __fonts: A list of pygame fonts, the font must be chosen according to the number of digits (using it as index)
+        __score: An integer, representing the current player's score
+        __board: A 4x4 matrix, representing the 2048 game
+        __animating: An integer, representing how many frames are left in the current animation
+        __animating_time: An integer, representing the length in frame of an animation
+        __animating_info: A list of tuples of 3 elements: a tuple of 2 integers representing the starting position, a tuple of 2 integers representing the destination of the animation and an integer representing the value of the animated cell
+        __spawning: a list of tuples of 3 integers: the 2 indexes of the cell that is "spawning" and the current spawning frame that needs to be displayed
+        __spawning_time: An integer, representing the length in frame of a spawning animation
+        __time_since_game_over: An integers, representing the number of frames displayed since the game ended
+    """
+
+    def __init__(self, position:tuple, cell_size:int, margin:int, font:str, max_font_size:int) -> None:
+        """
+        Inits Game
+
+        Args:
+            position: A tuple of 2 integers, representing the absolute position (in pixel) of the top left corner of the board
+            cell_size: An integer, representing the size of a single cell of the board
+            margin: An integer, represeting the margin between two cells
+            font: A string representing a valid pygame font
+            max_font_size: An integer, representing the size of the biggest font possible
+        """
         self.__pos = position
         self.__cell_size = cell_size
         self.__margin = margin
@@ -16,7 +55,10 @@ class Game:
 
         self.reset()
 
-    def reset(self):
+    def reset(self) -> None:
+        """
+        Resets the board and start a new game by spawning the first 2 tiles
+        """
         self.__score = 0
 
         self.__board = [[0 for _ in range(4)] for _ in range(4)]
@@ -34,7 +76,13 @@ class Game:
         self.__next_turn()
 
 
-    def make_move(self, move):
+    def make_move(self, move:str) -> None:
+        """
+        If it's legal, makes the specified move
+
+        Args:
+            move: A string, it must be "up", "down", "right" or "left"
+        """
         if not self.is_legal_move(move):
             return
         self.__spawning = []
@@ -152,7 +200,10 @@ class Game:
 
         self.__next_turn()
 
-    def __next_turn(self):
+    def __next_turn(self) -> None:
+        """
+        Sets up the board for the next turn by spawning a tile in a random location
+        """
         free_cells = []
         for i in range(4):
             for j in range(4):
@@ -169,7 +220,16 @@ class Game:
             self.__spawning.append((i,j,0))
             
 
-    def is_legal_move(self, move):
+    def is_legal_move(self, move:str) -> bool:
+        """
+        Checks whether a move is legal or not
+
+        Args:
+            move: A string, it must be "up", "down", "right" or "left"
+
+        Returns:
+            True if the move is legal, False if it isn't
+        """
         if move == "up":
             for j in range(4):
                 i = 0
@@ -229,7 +289,14 @@ class Game:
 
         return False
 
-    def check_game_over(self):
+    def check_game_over(self) -> bool:
+        """
+        Checks whether there is a legal move.
+        if not, the game is over
+
+        Returns:
+            True if the game is over, False if there is at least a legal move
+        """
         if self.is_legal_move("up"):
             return False
         if self.is_legal_move("right"):
@@ -240,10 +307,22 @@ class Game:
             return False
         return True
 
-    def get_score(self):
+    def get_score(self) -> int:
+        """
+        Returns the current player's score
+
+        Returns:
+            The current player's score
+        """
         return self.__score
 
-    def show(self, screen):
+    def show(self, screen) -> None:
+        """
+        Shows the board
+
+        Args:
+            screen: The pygame surface where the board will be drawn
+        """
         color = {
             0: (205,193,180),
             2: (238,228,218),
@@ -377,4 +456,4 @@ class Game:
         
 
         
-        
+    
