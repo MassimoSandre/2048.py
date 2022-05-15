@@ -47,6 +47,7 @@ class Game:
         self.__cell_size = cell_size
         self.__margin = margin
         
+        # I generate the list of fonts
         pygame.font.init()
         self.__fonts = [pygame.font.SysFont(font,max_font_size)]
         for i in range(5):
@@ -72,6 +73,7 @@ class Game:
 
         self.__time_since_game_over = 0
 
+        # I generate the first two tiles of the game
         self.__next_turn()
         self.__next_turn()
 
@@ -83,23 +85,32 @@ class Game:
         Args:
             move: A string, it must be "up", "down", "right" or "left"
         """
+
+        # I check if the move is legal
         if not self.is_legal_move(move):
             return
+        
+        # I reset all the animations
         self.__spawning = []
         self.__animation_info = []
         self.__animating = self.__animation_time
+
         if move == "up":
             for j in range(4):
                 last_valid = 0
                 for i in range(4):
+                    # I check if the current cell is not void
                     if self.__board[i][j] != 0:
+                        # I check if the current tile can be moved 
                         if i != last_valid:
                             if self.__board[last_valid][j] == 0:
+                                # The current tile will move in a void cell
                                 self.__animation_info.append(((i,j),(last_valid,j), self.__board[i][j]))
                                 self.__board[last_valid][j] = self.__board[i][j]
                                 self.__board[i][j] = 0
                                 
                             elif self.__board[last_valid][j] == self.__board[i][j]:
+                                # The current tile will merge with another one with the same value
                                 self.__animation_info.append(((i,j),(last_valid,j), self.__board[i][j]))
                                 self.__spawning.append((last_valid,j,0))
                                 self.__board[last_valid][j] *= 2
@@ -108,26 +119,32 @@ class Game:
                                 last_valid +=1
                                 self.__board[i][j] = 0
                             else:
+                                # The current tile will move (or will stand still) to the furthest valid cell
                                 last_valid +=1
                                 self.__animation_info.append(((i,j),(last_valid,j), self.__board[i][j]))
                                 
                                 self.__board[last_valid][j], self.__board[i][j] = self.__board[i][j], self.__board[last_valid][j]
 
                         else:
+                            # In the animation the current tile won't move
                             self.__animation_info.append(((i,j),(i,j), self.__board[i][j]))
 
         elif move == "right":
             for i in range(4):
                 last_valid = 0
                 for j in range(4):
+                    # I check if the current cell is not void
                     if self.__board[i][3-j] != 0:
+                        # I check if the current tile can be moved 
                         if j != last_valid:
                             if self.__board[i][3-last_valid] == 0:
+                                # The current tile will move in a void cell
                                 self.__animation_info.append(((i,3-j),(i,3-last_valid), self.__board[i][3-j]))
                                 self.__board[i][3-last_valid] = self.__board[i][3-j]
                                 self.__board[i][3-j] = 0
                                 
                             elif self.__board[i][3-last_valid] == self.__board[i][3-j]:
+                                # The current tile will merge with another one with the same value
                                 self.__animation_info.append(((i,3-j),(i,3-last_valid), self.__board[i][3-j]))
                                 self.__spawning.append((i,3-last_valid,0))
                                 self.__board[i][3-last_valid] *= 2
@@ -136,25 +153,31 @@ class Game:
                                 last_valid +=1
                                 self.__board[i][3-j] = 0
                             else:
+                                # The current tile will move (or will stand still) to the furthest valid cell
                                 last_valid +=1
                                 self.__animation_info.append(((i,3-j),(i,3-last_valid), self.__board[i][3-j]))
                                 self.__board[i][3-last_valid], self.__board[i][3-j] = self.__board[i][3-j], self.__board[i][3-last_valid]
 
                         else:
+                            # In the animation the current tile won't move
                             self.__animation_info.append(((i,3-j),(i,3-j), self.__board[i][3-j]))
 
         elif move == "down":
             for j in range(4):
                 last_valid = 0
                 for i in range(4):
+                    # I check if the current cell is not void
                     if self.__board[3-i][j] != 0:
+                        # I check if the current tile can be moved 
                         if i != last_valid:
                             if self.__board[3-last_valid][j] == 0:
+                                # The current tile will move in a void cell
                                 self.__board[3-last_valid][j] = self.__board[3-i][j]
                                 self.__animation_info.append(((3-i,j),(3-last_valid,j), self.__board[3-i][j]))
                                 self.__board[3-i][j] = 0
                                 
                             elif self.__board[3-last_valid][j] == self.__board[3-i][j]:
+                                # The current tile will merge with another one with the same value
                                 self.__animation_info.append(((3-i,j),(3-last_valid,j), self.__board[3-i][j]))
                                 self.__spawning.append((3-last_valid,j,0))
                                 self.__board[3-last_valid][j] *= 2
@@ -163,25 +186,31 @@ class Game:
                                 last_valid +=1
                                 self.__board[3-i][j] = 0
                             else:
+                                # The current tile will move (or will stand still) to the furthest valid cell
                                 last_valid +=1
                                 self.__animation_info.append(((3-i,j),(3-last_valid,j), self.__board[3-i][j]))
                                 self.__board[3-last_valid][j], self.__board[3-i][j] = self.__board[3-i][j], self.__board[3-last_valid][j]
                         
                         else:
+                            # In the animation the current tile won't move
                             self.__animation_info.append(((3-i,j),(3-i,j), self.__board[3-i][j]))
                     
         elif move == "left":
             for i in range(4):
                 last_valid = 0
                 for j in range(4):
+                    # I check if the current cell is not void
                     if self.__board[i][j] != 0:
+                        # I check if the current tile can be moved 
                         if j != last_valid:
                             if self.__board[i][last_valid] == 0:
+                                # The current tile will move in a void cell
                                 self.__animation_info.append(((i,j),(i,last_valid), self.__board[i][j]))
                                 self.__board[i][last_valid] = self.__board[i][j]
                                 self.__board[i][j] = 0
                                 
                             elif self.__board[i][last_valid] == self.__board[i][j]:
+                                # The current tile will merge with another one with the same value
                                 self.__animation_info.append(((i,j),(i,last_valid), self.__board[i][j]))
                                 self.__spawning.append((i,last_valid,0))
                                 self.__board[i][last_valid] *= 2
@@ -190,11 +219,13 @@ class Game:
                                 last_valid +=1
                                 self.__board[i][j] = 0
                             else:
+                                # The current tile will move (or will stand still) to the furthest valid cell
                                 last_valid +=1
                                 self.__animation_info.append(((i,j),(i,last_valid), self.__board[i][j]))
                                 self.__board[i][last_valid], self.__board[i][j] = self.__board[i][j], self.__board[i][last_valid]
 
                         else:
+                            # In the animation the current tile won't move
                             self.__animation_info.append(((i,j),(i,j), self.__board[i][j]))
 
 
@@ -204,14 +235,20 @@ class Game:
         """
         Sets up the board for the next turn by spawning a tile in a random location
         """
+
+        # I create a list containing all the free cells
         free_cells = []
         for i in range(4):
             for j in range(4):
                 if self.__board[i][j] == 0:
                     free_cells.append((i,j))
 
+        # I there's at least one free_cell
+        # I will pick one of them randomly and spawn a tile inside
         if free_cells != []:
             i,j = random.choice(free_cells)
+
+            # The new tile's value will be 2 five times out of six, 4 one time of six
             if random.randint(0,5):
                 self.__board[i][j] = 2
             else:
@@ -235,10 +272,13 @@ class Game:
                 i = 0
                 gap = False
                 while i < 4:
+                    # I checks if the current cell is void
+                    # If the current cell is not void and the previous one is void, the move is legal
                     if self.__board[i][j] == 0:
                         gap = True
                     elif gap:
                         return True
+                    # If two tiles can be merge, the move is legal
                     if i < 3:
                         if self.__board[i][j] == self.__board[i+1][j]:
                             return True
@@ -249,10 +289,13 @@ class Game:
                 i = 0
                 gap = False
                 while i < 4:
+                    # I checks if the current cell is void
+                    # If the current cell is not void and the previous one is void, the move is legal
                     if self.__board[j][3-i] == 0:
                         gap = True
                     elif gap:
                         return True
+                    # If two tiles can be merge, the move is legal
                     if i < 3:
                         if self.__board[j][3-i] == self.__board[j][3-(i+1)]:
                             return True
@@ -263,10 +306,13 @@ class Game:
                 i = 0
                 gap = False
                 while i < 4:
+                    # I checks if the current cell is void
+                    # If the current cell is not void and the previous one is void, the move is legal
                     if self.__board[3-i][j] == 0:
                         gap = True
                     elif gap:
                         return True
+                    # If two tiles can be merge, the move is legal
                     if i < 3:
                         if self.__board[3-i][j] == self.__board[3-(i+1)][j]:
                             return True
@@ -277,10 +323,13 @@ class Game:
                 i = 0
                 gap = False
                 while i < 4:
+                    # I checks if the current cell is void
+                    # If the current cell is not void and the previous one is void, the move is legal
                     if self.__board[j][i] == 0:
                         gap = True
                     elif gap:
                         return True
+                    # If two tiles can be merge, the move is legal
                     if i < 3:
                         if self.__board[j][i] == self.__board[j][i+1]:
                             return True
@@ -323,6 +372,8 @@ class Game:
         Args:
             screen: The pygame surface where the board will be drawn
         """
+
+        # The color of the tile depends depends on its value
         color = {
             0: (205,193,180),
             2: (238,228,218),
@@ -350,6 +401,7 @@ class Game:
                 for j in range(4):
                     if self.__board[i][j] != 0:
 
+                        # I check whether the current tile is spawning
                         is_spawning = False
                         for e in self.__spawning:
                             ti,tj,tt = e
@@ -360,23 +412,27 @@ class Game:
                         if not is_spawning:
                             pygame.draw.rect(screen, color[self.__board[i][j]], pygame.Rect((self.__pos[0]+self.__margin*(j+1)+self.__cell_size*j, self.__pos[1]+self.__margin*(i+1)+self.__cell_size*i),[self.__cell_size]*2),0,3)
                         else:
+                            # I calculate the actual size of the tile according to the spawning animation phase
                             ds = 0.4/self.__spawning_time * tt
-                            
                             actual_cell_size = (ds+0.7)*self.__cell_size
                             actual_cell_size = int(actual_cell_size)
+
+                            # I calculate the real adjusted position of the cell and draws it
                             delta = (actual_cell_size-self.__cell_size)//2
                             pygame.draw.rect(screen, color[self.__board[i][j]], pygame.Rect((self.__pos[0]+self.__margin*(j+1)+self.__cell_size*j -delta, self.__pos[1]+self.__margin*(i+1)+self.__cell_size*i - delta),[actual_cell_size]*2),0,3)
 
+                            # I checks if the spawning animation is over
+                            # if it isn't, I increment the current frame of the animation
                             if tt == self.__spawning_time:
                                 self.__spawning.remove((i,j,tt))
                             else:
                                 self.__spawning[self.__spawning.index((i,j,tt))] = (i,j,tt+1)
                                 
-
                         text_color = (119,110,101)
                         if self.__board[i][j] > 4:
                             text_color = (249,246,242)
                         
+                        # I calculate the position of the text of the tile
                         cx,cy=(self.__pos[0]+self.__margin*(j+1)+self.__cell_size*j, self.__pos[1]+self.__margin*(i+1)+self.__cell_size*i)
                         cx += self.__cell_size//2
                         cy += self.__cell_size//2
@@ -393,21 +449,24 @@ class Game:
                         pygame.draw.rect(screen, color[0], pygame.Rect((self.__pos[0]+self.__margin*(j+1)+self.__cell_size*j, self.__pos[1]+self.__margin*(i+1)+self.__cell_size*i),[self.__cell_size]*2),0,3)
 
         else:
+            # I draw the void board
             for i in range(4):
                 for j in range(4):
                     pygame.draw.rect(screen, color[0], pygame.Rect((self.__pos[0]+self.__margin*(j+1)+self.__cell_size*j, self.__pos[1]+self.__margin*(i+1)+self.__cell_size*i),[self.__cell_size]*2),0,3)
-            for info in self.__animation_info:
-
-                
+            
+            for info in self.__animation_info:                
                 p1,p2,v = info
                 i1,j1 = p1
                 i2,j2 = p2
                 
+                # I calculate the positions of the starting cell and of the destination cell of the current animated tile
                 cx1,cy1 = self.__margin*(j1+1) + self.__cell_size*j1, self.__margin*(i1+1) + self.__cell_size*i1
                 cx2,cy2 = self.__margin*(j2+1) + self.__cell_size*j2, self.__margin*(i2+1) + self.__cell_size*i2
 
+                # I calculate the position variation
                 dx,dy = cx1-cx2, cy1-cy2
 
+                # I calculate the actual position, according to the animation phase
                 ax,ay = self.__pos
                 ax+=cx2
                 ay+=cy2
@@ -416,6 +475,7 @@ class Game:
 
                 pygame.draw.rect(screen, color[v], pygame.Rect((ax,ay),[self.__cell_size]*2),0,3)
 
+                # I calculate the position of the text of the tile
                 ax += self.__cell_size//2
                 ay += self.__cell_size//2
 
@@ -434,13 +494,16 @@ class Game:
                 
             self.__animating -=1
 
+        # I checks if the game is over
         if self.check_game_over():
+            # the board will slowly fade away
             image = pygame.Surface([self.__margin*5 + self.__cell_size*4]*2, pygame.SRCALPHA,32)
             pygame.draw.rect(image, (187,173,160),pygame.Rect((0,0), [self.__margin*5 + self.__cell_size*4]*2),0,5)
             image = image.convert_alpha()
             image.set_alpha(min(self.__time_since_game_over,200))
             screen.blit(image,self.__pos)
 
+            # I display the text "Game Over!"
             text_surface = self.__fonts[0].render(str("Game over!"), False,(119,111,102))
             text_surface = text_surface.convert_alpha()
             text_surface.set_alpha(min(255,self.__time_since_game_over))
@@ -451,9 +514,3 @@ class Game:
 
             if self.__time_since_game_over < 255:
                 self.__time_since_game_over += 5
-
-        
-        
-
-        
-    

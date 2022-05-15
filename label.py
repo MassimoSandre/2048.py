@@ -75,11 +75,13 @@ class Label:
         Args:
             screen: The pygame surface where the button will be drawn
         """
+
+        # I calculate the position of the top left corner of the label
         fx,fy = self.__posx - self.__width//2, self.__posy - self.__height//2
     
         pygame.draw.rect(screen, (187,173,160), pygame.Rect((fx,fy), (self.__width, self.__height)), 0, 4)        
 
-        
+        # I create and display the surfaces for title and value of the label
         title_surface = self.__title_font.render(str(self.__title), False,(238,223,199))
         value_surface = self.__value_font.render(str(self.__value), False,(255,255,255))
 
@@ -89,6 +91,5 @@ class Label:
         dx2 = value_surface.get_rect().width//2
         dy2 = value_surface.get_rect().height//2
         
-
         screen.blit(title_surface, (self.__posx-dx1, self.__posy-dy1 -self.__height//5))
         screen.blit(value_surface, (self.__posx-dx2, self.__posy-dy2 +self.__height//5))

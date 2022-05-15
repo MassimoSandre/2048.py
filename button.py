@@ -51,21 +51,24 @@ class Button:
         pygame.font.init()
         self.__font = pygame.font.SysFont(font,font_size)
 
-
         self.__over_time = 0
     
     def is_inside(self, pos) -> bool:
         """
-        Checks whether an absolute position lays inside the button
+        Checks whether an absolute position lies inside the button
 
         Args:
             pos: A tuple of 2 integers, representing an absolute position
 
         Returns:
-            True if the position pos lays inside the button, False if not    
+            True if the position pos lies inside the button, False if not    
         """
+        
+        # I calculate the position of the top left corner of the button
         fx,fy = self.__pos[0] - self.__width//2, self.__pos[1] - self.__height//2
         tx,ty = pos
+
+        # I check whether the specified position lies inside the button
         if tx < fx:
             return False
         if tx > fx + self.__width:
@@ -108,6 +111,8 @@ class Button:
             screen: The pygame surface where the button will be drawn
             mousepos: A tuple of 2 integers representing the absolute position of the mouse
         """
+        
+        # I calculate the position of the top left corner of the button
         fx,fy = self.__pos[0] - self.__width//2, self.__pos[1] - self.__height//2
 
         if self.disabled:
